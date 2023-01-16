@@ -1,0 +1,22 @@
+{
+    "author": "Janika Neuberger",
+    "manifest_version": 2,
+    "name": "Secure Credentials",
+    "version": "1.0",
+    "description": "Catches a post request containing dummy credentials and replacing them with the real credentials.",
+    "icons": {
+        "48": "icons/border-48.png"
+    },
+    "permissions": [
+        "webRequest",
+        "webRequestBlocking",
+        "<all_urls>"
+    ],
+    "background": {
+        "scripts": [
+            "model/CredentialInfo.js",
+            "model/CredentialStorage.js",
+            "RequestProxy.js"
+        ]
+    }
+}

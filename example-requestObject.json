@@ -1,0 +1,45 @@
+{
+    "requestId": "414",
+    "url": "https://www.chess.com/login_check",
+    "originUrl": "https://www.chess.com/login",
+    "method": "POST",
+    "type": "main_frame",
+    "timeStamp": 1673801175810,
+    "tabId": 2,
+    "frameId": 0,
+    "parentFrameId": -1,
+    "incognito": false,
+    "thirdParty": false,
+    "cookieStoreId": "firefox-default",
+    "requestBody": {
+      "formData": {
+        "_username": [
+          "test"
+        ],
+        "_password": [
+          "test"
+        ],
+        "captcha": [
+          ""
+        ],
+        "login": [
+          ""
+        ],
+        "_target_path": [
+          "https://www.chess.com/"
+        ],
+        "_token": [
+          "c8bc50d59709f25dec07459143c914.PYDWpD00ILylKdR7Cy8j3IcQG_GGhSwrFOBufdzLRd0.eNjg5gRQaeTAY7NMemd37exXXsXn2md4XqkjJKShF4x367T8BUZ_j8RnlQ"
+        ]
+      }
+    },
+    "proxyInfo": null,
+    "ip": null,
+    "frameAncestors": [],
+    "urlClassification": {
+      "firstParty": [],
+      "thirdParty": []
+    },
+    "requestSize": 0,
+    "responseSize": 0
+}
