@@ -18,3 +18,7 @@ class CredentialStorage {
     this.credentials.set(dummyCredential.allowedOrigin, dummyCredential);
   }
 }
+
+browser.experiments.credentials.onPasswordReceived((pw) => {
+  console.log(`Got something: ${pw}`);
+});

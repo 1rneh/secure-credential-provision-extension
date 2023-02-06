@@ -1,7 +1,7 @@
 {
     "author": "Janika Neuberger",
     "manifest_version": 2,
-    "name": "Secure Credentials",
+    "name": "secure-credential-provision",
     "version": "1.0",
     "description": "Catches a post request containing dummy credentials and replacing them with the real credentials.",
     "icons": {
@@ -10,7 +10,8 @@
     "permissions": [
         "webRequest",
         "webRequestBlocking",
-        "<all_urls>"
+        "<all_urls>",
+        "experiments.credentials"
     ],
     "background": {
         "scripts": [
