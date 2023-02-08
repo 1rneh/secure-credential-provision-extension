@@ -27,3 +27,6 @@ It has two Extension API dependencies that are not yet - maybe never will be - i
 2. The webRequest API offers requestHeader modification but the requestBody can not be modified and returned yet.
 
 **Limitation:** In order for the web extension to find the dummy value and replace it with the real one, the value _passwordDummy_ needs to appear unencrypted and unmodified in the requestBody. Another restriction is the origin. Only requests that are send to the same origin as the domain that the login was stored for are given access to the real password.
+
+**Experimental API**
+More information about Experimental APIs in privileged Web Extensions can be found in the [Firefox Source Code documentation](https://firefox-source-docs.mozilla.org/toolkit/components/extensions/webextensions/basics.html#adding-experimental-apis-in-privileged-extensions).
