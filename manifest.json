@@ -1,17 +1,22 @@
 {
     "author": "Janika Neuberger",
     "manifest_version": 2,
-    "name": "secure-credential-provision",
     "version": "1.0",
+    "name": "secure-credential-provision",
     "description": "Catches a post request containing dummy credentials and replacing them with the real credentials.",
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "credentials@experiments.addons.mozilla.org"
+        }
+    },
     "icons": {
         "48": "icons/border-48.png"
     },
     "permissions": [
+        "experiments.credentials",
         "webRequest",
         "webRequestBlocking",
-        "<all_urls>",
-        "experiments.credentials"
+        "*://*/*"
     ],
     "background": {
         "scripts": [
@@ -19,5 +24,22 @@
             "model/CredentialStorage.js",
             "RequestProxy.js"
         ]
+    },
+    "experiment_apis": {
+        "credentials": {
+            "schema": "experiments/credentials/schema.json",
+            "parent": {
+                "scopes": [
+                    "addon_parent"
+                ],
+                "script": "experiments/credentials/api.js",
+                "paths": [
+                    [
+                        "experiments",
+                        "credentials"
+                    ]
+                ]
+            }
+        }
     }
 }

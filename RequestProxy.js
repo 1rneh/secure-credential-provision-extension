@@ -35,6 +35,7 @@ function isValidTTL(ttl) {
 }
 
 function scanRequest(requestDetails) {
+  console.log("event received");
   if (requestDetails.method !== "POST") {
     return;
   }
@@ -54,8 +55,6 @@ function scanRequest(requestDetails) {
 
 browser.webRequest.onBeforeRequest.addListener(
   scanRequest,
-  {
-    urls: ["<all_urls>"],
-  },
+  { urls: ["*://*/*"] },
   ["requestBody", "blocking"]
 );
