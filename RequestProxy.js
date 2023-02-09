@@ -1,5 +1,5 @@
 const credStorage = CredentialStorage.getInstance();
-//credStorage.fillWithDummyCredential();
+credStorage.fillWithDummyCredential();
 let credentials = credStorage.credentials;
 function isSameOrigin(requestOrigin, credentialOrigin) {
   const requestURL = new URL(requestOrigin);
