@@ -1,6 +1,6 @@
 {
     "author": "Janika Neuberger",
-    "manifest_version": 3,
+    "manifest_version": 2,
     "version": "1.0",
     "name": "secure-credential-provision",
     "description": "Receives the real password from the password manager and catches the post request containing the dummy password and replacing it with the real password.",
@@ -8,10 +8,10 @@
         "48": "icons/border-48.png"
     },
     "permissions": [
-        "experiments.credentials",
         "webRequest",
         "webRequestBlocking",
-        "activeTab"
+        "<all_urls>",
+        "experiments.credentials"
     ],
     "background": {
         "scripts": [
