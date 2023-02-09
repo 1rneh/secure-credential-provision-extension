@@ -1,18 +1,6 @@
 const credStorage = CredentialStorage.getInstance();
 //credStorage.fillWithDummyCredential();
 let credentials = credStorage.credentials;
-
-function checkRequestBody(requestDetails, login) {
-  let bodyToString = JSON.stringify(requestDetails.requestBody);
-  let bodyModified = bodyToString.replace(login.dummyValue, login.realValue);
-  if (bodyToString !== bodyModified) {
-    requestDetails.requestBody = JSON.parse(bodyModified);
-    console.log(
-      "Dummy password and replaced with real password.",
-      requestDetails.requestBody
-    );
-  }
-}
 function isSameOrigin(requestOrigin, credentialOrigin) {
   const requestURL = new URL(requestOrigin);
   const loginURL = new URL(credentialOrigin);
@@ -34,29 +22,38 @@ function isValidTTL(ttl) {
   return Date.now() < ttl;
 }
 
-function scanRequest(requestDetails) {
-  console.log("event received");
-  if (requestDetails.method !== "POST") {
-    return;
-  }
-  let matchingLogin;
-  credentials.forEach((cred) => {
-    if (
-      isSameOrigin(requestDetails.url, cred.allowedOrigin) &&
-      isValidTTL(cred.ttl)
-    ) {
-      matchingLogin = cred;
+function scanRequestBody(requestDetails) {
+  if (requestDetails.method == "POST" && requestDetails.requestBody) {
+    let matchingLogin;
+    credentials.forEach((cred) => {
+      if (
+        isSameOrigin(requestDetails.url, cred.allowedOrigin) &&
+        isValidTTL(cred.ttl)
+      ) {
+        matchingLogin = cred;
+      }
+    });
+    if (matchingLogin) {
+      let bodyToString = JSON.stringify(requestDetails.requestBody);
+      let bodyModified = bodyToString.replace(
+        matchingLogin.dummyValue,
+        matchingLogin.realValue
+      );
+      if (bodyToString !== bodyModified) {
+        requestDetails.requestBody = JSON.parse(bodyModified);
+        console.log(
+          "Dummy password replaced with real password in ",
+          requestDetails
+        );
+      }
     }
-  });
-  if (matchingLogin) {
-    checkRequestBody(requestDetails, matchingLogin);
   }
 }
 
 browser.webRequest.onBeforeRequest.addListener(
-  scanRequest,
-  { urls: ["*://*/*"] },
-  ["requestBody", "blocking"]
+  scanRequestBody,
+  { urls: ["<all_urls>"] },
+  ["requestBody"]
 );
 
 browser.experiments.credentials.onPasswordReceived.addListener((pw) =>

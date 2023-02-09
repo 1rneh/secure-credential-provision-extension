@@ -9,12 +9,18 @@ class CredentialStorage {
     return this.instance;
   }
 
-  // fillWithDummyCredential() {
-  //   const dummyCredential = new CredentialInfo(
-  //     "passwordDummy",
-  //     "realValue",
-  //     "https://www.chess.com"
-  //   );
-  //   this.credentials.set(dummyCredential.allowedOrigin, dummyCredential);
-  // }
+  fillWithDummyCredential() {
+    const dummyCredentials1 = new CredentialInfo(
+      "passwordDummy",
+      "realValue",
+      "https://www.chess.com"
+    );
+    this.credentials.set(dummyCredentials1.allowedOrigin, dummyCredentials1);
+    const dummyCredentials2 = new CredentialInfo(
+      "passwordDummy",
+      "realValue",
+      "http://localhost:5000"
+    );
+    this.credentials.set(dummyCredentials2.allowedOrigin, dummyCredentials2);
+  }
 }
