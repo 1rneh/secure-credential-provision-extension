@@ -18,9 +18,3 @@ class CredentialStorage {
   //   this.credentials.set(dummyCredential.allowedOrigin, dummyCredential);
   // }
 }
-
-function test(pw) {
-  console.log(pw);
-}
-
-browser.experiments.credentials.onPasswordReceived.addListener(test);

@@ -1,5 +1,5 @@
 const credStorage = CredentialStorage.getInstance();
-credStorage.fillWithDummyCredential();
+//credStorage.fillWithDummyCredential();
 let credentials = credStorage.credentials;
 
 function checkRequestBody(requestDetails, login) {
@@ -57,4 +57,8 @@ browser.webRequest.onBeforeRequest.addListener(
   scanRequest,
   { urls: ["*://*/*"] },
   ["requestBody", "blocking"]
+);
+
+browser.experiments.credentials.onPasswordReceived.addListener((pw) =>
+  console.log(pw)
 );
