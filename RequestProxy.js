@@ -19,7 +19,8 @@ function isSameOrigin(requestOrigin, credentialOrigin) {
   }
 }
 function isValidTTL(ttl) {
-  return Date.now() < ttl;
+  //return Date.now() < ttl;
+  return true;
 }
 
 function scanRequestBody(requestDetails) {
