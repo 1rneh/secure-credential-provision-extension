@@ -1,6 +1,5 @@
-const credStorage = CredentialStorage.getInstance();
-credStorage.fillWithDummyCredential();
-let credentials = credStorage.credentials;
+const credentialStorage = CredentialStorage.instance;
+
 function isSameOrigin(requestOrigin, credentialOrigin) {
   const requestURL = new URL(requestOrigin);
   const loginURL = new URL(credentialOrigin);
@@ -19,16 +18,16 @@ function isSameOrigin(requestOrigin, credentialOrigin) {
   }
 }
 function isValidTTL(ttl) {
-  //return Date.now() < ttl;
-  return true;
+  return Date.now() < ttl;
 }
 
 function scanRequestBody(requestDetails) {
   if (requestDetails.method == "POST" && requestDetails.requestBody) {
     let matchingLogin;
-    credentials.forEach((cred) => {
+    credentialStorage.cleanUp();
+    credentialStorage.credentials.forEach((cred) => {
       if (
-        isSameOrigin(requestDetails.url, cred.allowedOrigin) &&
+        isSameOrigin(requestDetails.url, cred.origin) &&
         isValidTTL(cred.ttl)
       ) {
         matchingLogin = cred;
@@ -46,6 +45,8 @@ function scanRequestBody(requestDetails) {
           "Dummy password replaced with real password in ",
           requestDetails
         );
+        credentialStorage.removeCredentialInfo(matchingLogin.id);
+        console.log(`Removed credentials for id: ${matchingLogin.id}`);
       }
     }
   }
@@ -55,8 +56,4 @@ browser.webRequest.onBeforeRequest.addListener(
   scanRequestBody,
   { urls: ["<all_urls>"] },
   ["requestBody"]
-);
-
-browser.experiments.credentials.onPasswordReceived.addListener((pw) =>
-  console.log(pw)
 );
