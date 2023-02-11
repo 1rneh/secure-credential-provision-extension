@@ -1,36 +1,47 @@
-# Secure Credentials Extension
+# Secure Credential Provision
 
-This experimental web extension contributes to the secure provision of passwords when using the autofill feature by Firefox's password manager.
+This experimental Firefox extension contributes to the secure provision of passwords when using the autofill feature by Firefox's password manager.
 
-Approach:\
-A website is loaded and the password manager is about to autofill the password field. Instead of autofilling the real password, a dummy value is filled in the password field and the event `secure-credential-provision` is fired, containing the real-password.\
+## What is the idea of Secure Credential Provision?
 
-Protoype:\
-Paste the next line into [this line of LoginManagerParent.jsm of mozilla central](https://searchfox.org/mozilla-central/source/toolkit/components/passwordmgr/LoginManagerParent.jsm#665)
+**Normal scenario:**\
+Firefox loads a website and the password manager has credentials saved for this website. Usually the LoginManagerParent sends the login data to the LoginManagerChild, where the child interacts with the website content and autofills the credentials into the designated login fields.
 
-```
-Services.obs.notifyObservers(null, "secure-credential-provision","realPassword");
-```
+**Secure Credential Provision:**\
+The LoginManagerParent only sends a dummy value instead of the real password to the LoginManagerChild. When the login data is later submitted the HTTP request body is scanned for the dummy value and gets replaced with real password.
 
-This event is created by the experimental extension API [experiments.credentials](https://github.com/1rneh/credentials-experimental-api). This Experimental API addon needs to be loaded beforehand, in order for the secure-credential-provision addon to work.
+Why? Passwords are sensitive data and malicious code could be present on a website.
 
-The web extension that contains the experimental API registers two event listeners:
+The web extension adds to event listeners for the following events:
 
 - webRequest.onBeforeRequest
-- experiments.credentials.onPassswordReceived
+- experiments.credentials.onPassswordReceived (see Pre-requisites)
 
-First the extension receives the real password and then intercepts the HTTP requests going to the "correct" web server and and scans them for the dummy value. If found the dummy value is found, it gets replaced by the real value.
+## Pre-requisites
+
+1. If you have a local build of Firefox paste the following lines [here](https://searchfox.org/mozilla-central/source/toolkit/components/passwordmgr/LoginManagerParent.jsm#665) in LoginManagerParent.jsm, right before the return statement and then rebuild.
+
+```
+jsLogins.forEach(login => {
+      login.dummyPassword = "dummYpa$$word"
+      login.dummyId = `dummy-${login.username}-${login.origin}`
+    })
+
+Services.obs.notifyObservers(null, "secure-credential-provision",JSON.stringify(jsLogins));
+
+jsLogins.forEach(login => login.password = login.dummyPassword)
+```
+
+2. On the new modified Firefox build, install the experimental API [experiments.credentials](https://github.com/1rneh/credentials-experimental-api) as temporary addon via _about:debugging_.
 
 ## Site notes
 
 This web extension is part of a bachelor thesis and only serves as a proof of concept. **It does not properly work as web extention yet!**\
-It has two Extension API dependencies that are not yet - maybe never will be - implemented.
+It has two web extension API dependencies that are not yet - maybe never will be - implemented.
 
-1. needs a Credential API that fires an event (containing the real password) everytime the password manager would autocomplete or autofill user credentials into username and password fields. Then the password manager needs to write the password dummy value into the password field.
-2. The webRequest API offers requestHeader modification but the requestBody can not be modified and returned yet.
+1. It needs a credential API that fires an event (containing the real password) everytime the LoginManagerParent would send login data to the LoginManagerChild in order to autocomplete or autofill user credentials. The LoginManagerChild than only receives a dummy password, that is worthless to an attacker.
+2. The webRequest API only offers modification of HTTP request header. For this extension the API would need the to be expanded with the option to modify request bodies as well.
 
 **Limitations**\
-In order for the web extension to find the dummy value and replace it with the real one, the value _passwordDummy_ needs to appear unencrypted and unmodified in the requestBody. Another restriction is the origin. Only requests that are send to the same origin as the domain that the login was stored for are given access to the real password.
-
-**Experimental API**\
-More information about Experimental APIs in privileged Web Extensions can be found in the [Firefox Source Code documentation](https://firefox-source-docs.mozilla.org/toolkit/components/extensions/webextensions/basics.html#adding-experimental-apis-in-privileged-extensions).
+In order for the web extension to find the password dummy value and replace it with the real one, the password dummy value needs to appear unencrypted, unencoded and unmodified in the HTTP request body.\
+Another restriction is the request host. Only password dummy value is only replaced with the real value in requests that are send to a host that matches the origin, that the login was stored for in the password manager.
