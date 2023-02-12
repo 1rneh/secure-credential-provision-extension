@@ -17,6 +17,7 @@
         "scripts": [
             "model/CredentialInfo.js",
             "model/CredentialStorage.js",
+            "Utils.js",
             "RequestProxy.js",
             "CredentialReceiver.js"
         ]

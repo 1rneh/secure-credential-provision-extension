@@ -22,14 +22,18 @@ The web extension adds to event listeners for the following events:
 1. If you have a local build of Firefox paste the following lines [here](https://searchfox.org/mozilla-central/source/toolkit/components/passwordmgr/LoginManagerParent.jsm#665) in LoginManagerParent.jsm, right before the return statement and then rebuild.
 
 ```
+let infos = [];
 jsLogins.forEach(login => {
-      login.dummyPassword = "dummYpa$$word"
-      login.dummyId = `dummy-${login.username}-${login.origin}`
-    })
-
-Services.obs.notifyObservers(null, "secure-credential-provision",JSON.stringify(jsLogins));
-
-jsLogins.forEach(login => login.password = login.dummyPassword)
+  let info = {
+    dummyId: `dummy-${login.username}-${login.origin}`,
+    dummyPassword: "dummYpa$$word",
+    realPassword: login.password,
+    origin: login.origin
+  };
+  infos.push(info)
+  login.password = info.dummyPassword
+})
+Services.obs.notifyObservers(null, "secure-credential-provision", JSON.stringify(infos));
 ```
 
 2. On the new modified Firefox build, install the experimental API [experiments.credentials](https://github.com/1rneh/credentials-experimental-api) as temporary addon via _about:debugging_.

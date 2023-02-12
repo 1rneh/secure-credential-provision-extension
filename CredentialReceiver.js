@@ -1,18 +1,20 @@
-function checkOnPasswordReceived(loginObject) {
-  if (loginObject) {
-    let loginInfos = JSON.parse(loginObject);
-    loginInfos.forEach((info) => {
+function processOnCredentialInfos(credentialDetails) {
+  if (credentialDetails) {
+    JSON.parse(credentialDetails).forEach((info) => {
       let credentialInfo = new CredentialInfo(
         info.dummyId,
         info.dummyPassword,
-        info.password,
+        info.realPassword,
         info.origin
       );
-      CredentialStorage.instance.saveCredentialInfo(info.dummyId, credentialInfo);
+      CredentialStorage.instance.saveCredentialInfo(
+        info.dummyId,
+        credentialInfo
+      );
     });
   }
 }
 
-browser.experiments.credentials.onPasswordReceived.addListener(
-  checkOnPasswordReceived
+browser.experiments.credentials.onCredentialInfos.addListener(
+  processOnCredentialInfos
 );
