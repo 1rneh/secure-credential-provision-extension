@@ -1,17 +1,28 @@
 const credentialStorage = CredentialStorage.instance;
 
-function isSameOrigin(requestOrigin, credentialOrigin) {
-  const requestURL = new URL(requestOrigin);
+function ignoreWWW(url) {
+  return url.replace(/:\/\/www./g, "://");
+}
+
+function isSameOrigin(requestOrigin, loginOrigin) {
+  return ignoreWWW(requestOrigin) === ignoreWWW(loginOrigin);
+}
+function isSameHostname(requestHostname, loginHostname) {
+  return ignoreWWW(requestHostname) === ignoreWWW(loginHostname);
+}
+
+function isValidHost(requestHost, credentialOrigin) {
+  const requestURL = new URL(requestHost);
   const loginURL = new URL(credentialOrigin);
 
-  if (requestURL.origin === loginURL.origin) {
+  if (isSameOrigin(requestURL.origin, loginURL.origin)) {
     return true;
   }
   const isHttpUgrade =
     loginURL.protocol === "http" && requestURL.protocol === "https";
   if (
     (isHttpUgrade || requestURL.protocol === loginURL.protocol) &&
-    requestURL.hostname === loginURL.hostname &&
+    isSameHostname(requestURL.hostname, loginURL.hostname) &&
     requestURL.port === loginURL.port
   ) {
     return true;
@@ -24,5 +35,5 @@ function isValidTTL(ttl) {
 function modifyRequestBody(requestBody, dummyPassword, realPassword) {
   let bodyToString = JSON.stringify(requestBody);
   let bodyModified = bodyToString.replace(dummyPassword, realPassword);
-  return body
+  return body;
 }

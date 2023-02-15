@@ -4,7 +4,7 @@ function scanRequestBody(requestDetails) {
     credentialStorage.cleanUp();
     credentialStorage.credentials.forEach((cred) => {
       if (
-        isSameOrigin(requestDetails.url, cred.origin) &&
+        isValidHost(requestDetails.url, cred.origin) &&
         isValidTTL(cred.ttl)
       ) {
         matchingLogin = cred;
