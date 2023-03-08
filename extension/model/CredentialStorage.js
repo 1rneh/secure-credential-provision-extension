@@ -2,6 +2,9 @@ class CredentialStorage {
   constructor() {
     this._credentials = new Map();
   }
+  /**
+   * Singleton implementation of CredentialStorage
+   */
   static get instance() {
     if (!this._instance) {
       this._instance = new CredentialStorage();
@@ -13,6 +16,7 @@ class CredentialStorage {
   }
 
   set credentials(credentials) {
+    this.cleanUp();
     this._credentials = credentials;
   }
 

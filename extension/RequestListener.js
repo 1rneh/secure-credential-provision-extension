@@ -47,12 +47,8 @@ function processFormData(data, matchingLogin) {
 function scanRequestBody(requestDetails) {
   if (requestDetails.method == "POST" && requestDetails.requestBody) {
     let matchingLogin;
-    credentialStorage.cleanUp();
     credentialStorage.credentials.forEach((cred) => {
-      if (
-        isValidHost(requestDetails.url, cred.origin) &&
-        isValidTTL(cred.ttl)
-      ) {
+      if (isValidHost(requestDetails.url, cred.origin)) {
         matchingLogin = cred;
       }
     });
@@ -84,7 +80,6 @@ function scanRequestBody(requestDetails) {
         case MODIFIED_FORMDATA:
           requestDetails.requestBody.formData = res.data;
           console.log("Modified form data: ", res.data);
-          credentialStorage.removeCredentialInfo(matchingLogin.id);
       }
     }
   }

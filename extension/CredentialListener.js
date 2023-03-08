@@ -1,4 +1,4 @@
-function processOnCredentialInfos(credentialDetails) {
+function processOnCredentialInfo(credentialDetails) {
   if (credentialDetails) {
     JSON.parse(credentialDetails).forEach((info) => {
       let credentialInfo = new CredentialInfo(
@@ -15,6 +15,6 @@ function processOnCredentialInfos(credentialDetails) {
   }
 }
 
-browser.experiments.credentials.onCredentialInfos.addListener(
-  processOnCredentialInfos
+browser.experiments.credentials.onCredentialInfo.addListener(
+  processOnCredentialInfo
 );
