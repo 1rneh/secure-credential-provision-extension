@@ -1,0 +1,20 @@
+[
+  {
+    "namespace": "experiments.credentials",
+    "description": "API supporting credential provision to extensions",
+    "events": [
+      {
+        "name": "onCredentialInfo",
+        "type": "function",
+        "description": "Dispatched before the LoginManagerParent sends the credentials to the child process.",
+        "parameters": [
+          {
+            "name": "credentialInfos",
+            "type": "string",
+            "description": "serialized credentialInfos containing, dummyPassword, dummyId, realPassword, origin"
+          }
+        ]
+      }
+    ]
+  }
+]
