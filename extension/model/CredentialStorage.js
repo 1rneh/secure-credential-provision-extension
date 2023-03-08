@@ -22,9 +22,9 @@ class CredentialStorage {
 
   saveCredentialInfo(id, login) {
     if (this.credentials.has(id)) {
-      console.log(`Updating credentials of id=${id}`);
+      console.log(`Updating credentials for id=${id}`);
     } else {
-      console.log(`Credentials saved of id=${id}`);
+      console.log(`Credentials saved for id=${id}`);
     }
     this.credentials.set(id, login);
   }
