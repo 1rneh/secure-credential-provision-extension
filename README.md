@@ -1,51 +1,40 @@
 # Secure Credential Provision
 
-This experimental Firefox extension contributes to the secure provision of passwords when using the autofill feature by Firefox's password manager.
+This extension was developed within the scope of a bachelor thesis and only servers as proof of concept.
+
+---
 
 ## What is the idea of Secure Credential Provision?
 
-**Normal scenario:**\
-Firefox loads a website and the password manager has credentials saved for this website. Usually the LoginManagerParent sends the login data to the LoginManagerChild, where the child interacts with the website content and autofills the credentials into the designated login fields.
+The experimental Firefox extension contributes to the secure provision of passwords when using the Firefox's password manager's **autofill feature** to enter credentials into web pages.
 
-**Secure Credential Provision:**\
-The LoginManagerParent only sends a dummy value instead of the real password to the LoginManagerChild. When the login data is later submitted the HTTP request body is scanned for the dummy value and gets replaced with real password.
+**How?**
 
-Why? Passwords are sensitive data and malicious code could be present on a website.
+**Short version**: The password manager only autofills dummy passwords and the extension replaces the dummy password with real password in the HTTP request.
 
-The web extension adds to event listeners for the following events:
+**Long version**:
+The LoginManagerChild only receives and autofills a dummy password into the login web page. The _passwordmgr-on-receive-credential-info_ browser event containing {id, realValue, dummyValue, origin} is dispatched from the LoginManagerParent. The extension listens for the extension event _onCredentialInfo_ that is fired by the experimental credentials API when the API gets notified about the _passwordmgr-on-receive-credential-info_ browser event. The extension saves the credential details in a storage. It listens as well for the _onBeforeRequest_ extension event by the webRequest API. That event provides the HTTP request bodies for the requests whose hosts match the origin associated with the saved credentials.
 
-- webRequest.onBeforeRequest
-- experiments.credentials.onPassswordReceived (see Pre-requisites)
+---
 
-## Pre-requisites
+## Prerequisites
 
-1. If you have a local build of Firefox paste the following lines [here](https://searchfox.org/mozilla-central/source/toolkit/components/passwordmgr/LoginManagerParent.jsm#665) in LoginManagerParent.jsm, right before the return statement and then rebuild.
+- You first need a special Firefox Nightly version that has the browser sided changes implemented. To install one follow the instructions provided in [X](www.example.com)
 
-```
-let infos = [];
-jsLogins.forEach(login => {
-  let info = {
-    dummyId: `dummy-${login.username}-${login.origin}`,
-    dummyPassword: "dummYpa$$word",
-    realPassword: login.password,
-    origin: login.origin
-  };
-  infos.push(info)
-  login.password = info.dummyPassword
-})
-Services.obs.notifyObservers(null, "secure-credential-provision", JSON.stringify(infos));
-```
+- To see what this proof of concept is trying to prevent, follow the [credentials theft exploit](https://github.com/1rneh/capture-credentials-exploit) step-by-step instruction. If you are running the customized Firefox Nightly version, make sure you visit [about:config](about:config) and set signon.secureCredentialProvision.enabled to false first.
 
-2. On the new modified Firefox build, install the experimental API [experiments.credentials](https://github.com/1rneh/credentials-experimental-api) as temporary addon via _about:debugging_.
+## Installation steps
 
-## Site notes
+1. Clone this repository
 
-This web extension is part of a bachelor thesis and only serves as a proof of concept. **It does not properly work as web extention yet!**\
-It has two web extension API dependencies that are not yet - maybe never will be - implemented.
+2. Run the customized Firefox Nightly version.
 
-1. It needs a credential API that fires an event (containing the real password) everytime the LoginManagerParent would send login data to the LoginManagerChild in order to autocomplete or autofill user credentials. The LoginManagerChild than only receives a dummy password, that is worthless to an attacker.
-2. The webRequest API only offers modification of HTTP request header. For this extension the API would need the to be expanded with the option to modify request bodies as well.
+3. Visit [about:config](about:config). Check that signon.secureCredentialProvision is set (back) to true if it was changed. \
+   Also set the following preferences:
 
-**Limitations**\
-In order for the web extension to find the password dummy value and replace it with the real one, the password dummy value needs to appear unencrypted, unencoded and unmodified in the HTTP request body.\
-Another restriction is the request host. Only password dummy value is only replaced with the real value in requests that are send to a host that matches the origin, that the login was stored for in the password manager.
+   - xpinstall.signatures.required to false
+   - extensions.experiments.enabled to true
+
+4. Visit [about:debugging#/runtime/this-firefox](about:debugging#/runtime/this-firefox) and load the extension as temporary add on by choosing the manifest.json file in the main repository directory.
+
+5. Next to the extension name _Secure Credential Provision_ click "Inspect". Now you can repeat the [credentials theft exploit](https://github.com/1rneh/capture-credentials-exploit) or try a different login web page. Check out the logs that indicate that the extension has received credential information or modified a HTTP request body.
