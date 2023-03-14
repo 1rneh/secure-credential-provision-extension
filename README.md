@@ -17,15 +17,9 @@ The LoginManagerChild only receives and autofills a dummy password into the logi
 
 ---
 
-## Prerequisites
-
-- You first need a special Firefox Nightly version that has the browser sided changes implemented. To install one follow the instructions provided in [Firefox Nightly Build for Secure Credential Provision](https://github.com/1rneh/firefox-nightly-builds-secure-credential-provision)
-
-- To see what this proof of concept is trying to prevent, follow the [credentials theft exploit](https://github.com/1rneh/capture-credentials-exploit) step-by-step instructions. If you are running the Firefox Nightly Build for Secure Credential Provision, make sure you set the preference signon.secureCredentialProvision.enabled to false first.
-
 ## Installation steps
 
-1. Run the customized Firefox Nightly version.
+1. Install and run the [Firefox Nightly Build for Secure Credential Provision](https://github.com/1rneh/firefox-nightly-builds-secure-credential-provision)
 
 2. Type `about:config` into the search bar and set the following preference:
 
@@ -35,6 +29,12 @@ The LoginManagerChild only receives and autofills a dummy password into the logi
 
 3. Clone this repository
 
-4. Type `about:debugging#/runtime/this-firefox` into the search bar. Load the extension as temporary add on by choosing the manifest.json file in the main repository directory.
+4. Type `about:debugging#/runtime/this-firefox` into the search bar.
 
-5. Next to the newly added extension with the name _Secure Credential Provision_ click "Inspect". Now you can repeat the [credentials theft exploit](https://github.com/1rneh/capture-credentials-exploit) or try a different login web page. Check out the logs that indicate that the extension has received credential information or modified a HTTP request body.
+5. Load the extension as temporary add on by choosing the manifest.json file in the main repository directory.
+
+6. Next to the newly added extension with the name _Secure Credential Provision_ click "Inspect" to check out the extension.
+
+7. Now you can execute the [credentials theft exploit](https://github.com/1rneh/capture-credentials-exploit) or try a different login web page. Check out the logs that indicate that the extension has received credential information or modified a HTTP request body.
+
+8. Optional: Repeat the credential theft exploit but without the prototype changes. Set `extensions.experiments.enabled` to false for this.
