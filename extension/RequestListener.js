@@ -97,26 +97,22 @@ function processOnBeforeRequest(requestDetails) {
           requestDetails.requestBody.formData,
           matchingLogin
         );
-      } else {
+      } else if (requestDetails.requestBody?.error) {
         return;
       }
 
       switch (res?.bodyStatus) {
         case UNMODIFIED:
-        //console.log("Body unmodified.");
+          break;
         case MODIFIED_RAW:
           requestDetails.requestBody.raw[0].bytes = res.data;
           console.log("Modified raw byte data: ", ab2str(res.data));
           credentialStorage.removeCredentialInfo(matchingLogin.id);
+          break;
         case MODIFIED_FORMDATA:
           requestDetails.requestBody.formData = res.data;
           console.log("Modified form data: ", res.data);
-      }
-      if (!res?.bodyStatus !== UNMODIFIED) {
-        modifiedBodies.set(requestDetails.requestId, {
-          modiefiedRequestBody: requestDetails.requestBody,
-          credentialInfoOrigin: matchingLogin.origin,
-        });
+          break;
       }
     }
   }

@@ -15,8 +15,8 @@ function getBaseDomain(url) {
 }
 
 /**
- * Checks whether the host origin of the request and the origin for which the CredentialInfo object was stored for are the same
- * (following the example of LoginHelper.isOriginMatching, see https://searchfox.org/mozilla-central/source/toolkit/components/passwordmgr/LoginHelper.jsm#727)
+ * Checks whether the request host origin and the origin for which the CredentialInfo object was stored for are the same. Subdomains are accepted.
+ * (following the example of LoginHelper.isOriginMatching, see https://searchfox.org/mozilla-central/source/toolkit/components/passwordmgr/LoginHelper.jsm)
  *
  * @param {String} requestHost the host that the request is begin sent to
  * @param {String} credentialOrigin the origin that the CredentialInfo object is stored for

@@ -16,19 +16,19 @@ class CredentialStorage {
     return this._instance;
   }
   get credentials() {
+    this.cleanUp();
     return this._credentials;
   }
 
   set credentials(credentials) {
-    this.cleanUp();
     this._credentials = credentials;
   }
 
   saveCredentialInfo(id, login) {
     if (this.credentials.has(id)) {
-      console.log(`Updating the ttl for the CredentialInfo with id=${id}`);
+      console.log(`Updating the ttl for the CredentialInfo with id = ${id}`);
     } else {
-      console.log(`CredentialInfo saved with id=${id}`);
+      console.log(`CredentialInfo saved with id = ${id}`);
     }
     this.credentials.set(id, login);
   }
@@ -42,7 +42,7 @@ class CredentialStorage {
    */
   cleanUp() {
     this.credentials = new Map(
-      [...this.credentials].filter(([_, v]) => v.ttl > Date.now())
+      [...this._credentials].filter(([_, v]) => v.ttl > Date.now())
     );
   }
 }
