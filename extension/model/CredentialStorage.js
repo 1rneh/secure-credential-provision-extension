@@ -1,3 +1,7 @@
+/**
+ * CredentialStorage storing all CredentialInfo objects for 60 seconds
+ */
+
 class CredentialStorage {
   constructor() {
     this._credentials = new Map();
@@ -22,9 +26,9 @@ class CredentialStorage {
 
   saveCredentialInfo(id, login) {
     if (this.credentials.has(id)) {
-      console.log(`Updating credentials for id=${id}`);
+      console.log(`Updating the ttl for the CredentialInfo with id=${id}`);
     } else {
-      console.log(`Credentials saved for id=${id}`);
+      console.log(`CredentialInfo saved with id=${id}`);
     }
     this.credentials.set(id, login);
   }
@@ -34,7 +38,7 @@ class CredentialStorage {
   }
 
   /**
-   * Removes the credentialInfo entries (this.credentials) which are no longer valid, because the time-to-live has passed
+   * Removes the CredentialInfo entries from the CredentialStorage, for which the lifespan (ttl) has expired
    */
   cleanUp() {
     this.credentials = new Map(

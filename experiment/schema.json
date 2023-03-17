@@ -9,9 +9,9 @@
         "description": "Dispatched before the LoginManagerParent sends the credentials to the child process.",
         "parameters": [
           {
-            "name": "credentialInfos",
+            "name": "credentialInfo",
             "type": "string",
-            "description": "serialized credentialInfos containing, dummyPassword, dummyId, realPassword, origin"
+            "description": "serialized credentialInfo {dummyId, dummyPassword, realPassword, origin}"
           }
         ]
       }

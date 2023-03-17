@@ -2,6 +2,19 @@ const MODIFIED_RAW = {};
 const MODIFIED_FORMDATA = {};
 const UNMODIFIED = {};
 
+let modifiedBodies = new Map();
+
+/**
+ * Convert the bytes to string and check if the dummy value is found.
+ * If so, replace the dummy value with the real value.
+ *
+ * (If the request body was encoded by a type that the webRequest API didn't support,
+ * the webRequest API sends the unparsed bytes in an ArrayBuffer)
+ *
+ * @param {ArrayBuffer} buf
+ * @param {CredentialInfo} matchingLogin
+ * @returns {Object} bodyStatus (MODIEFIED_RAW, MODIFIED_FORMDATA or UNMODIFIED) and either the modified requestBody or null
+ */
 function processRawBytes(buf, matchingLogin) {
   let bytesToString;
 
@@ -12,7 +25,7 @@ function processRawBytes(buf, matchingLogin) {
   }
 
   if (!bytesToString.includes(matchingLogin.dummyValue)) {
-    return { bodyType: UNMODIFIED, data: null };
+    return { bodyStatus: UNMODIFIED, data: null };
   }
   console.log("Found dummy value in raw string: ", bytesToString);
   let modifiedStr = bytesToString.replace(
@@ -26,14 +39,24 @@ function processRawBytes(buf, matchingLogin) {
   } catch (e) {
     console.log("Error while converting string back to bytes", e);
   }
-  return { bodyType: MODIFIED_RAW, data: modifiedRawBytes };
+  return { bodyStatus: MODIFIED_RAW, data: modifiedRawBytes };
 }
 
+/**
+ * Check if the dummy value is found. If so, replace the dummy value with the real value.
+ *
+ * (If the request body was encoded by the types application/x-www-form-urlencoded or multipart/form-data
+ * it parses the request body correctly)
+ *
+ * @param {Object} data
+ * @param {CredentialInfo} matchingLogin
+ * @returns {Object} bodyStatus (MODIEFIED_RAW, MODIFIED_FORMDATA or UNMODIFIED) and either the modified requestBody or null
+ */
 function processFormData(data, matchingLogin) {
   let bodyToString = JSON.stringify(data);
 
   if (!bodyToString.includes(matchingLogin.dummyValue)) {
-    return { bodyType: UNMODIFIED, data: null };
+    return { bodyStatus: UNMODIFIED, data: null };
   }
   let bodyModified = bodyToString.replace(
     matchingLogin.dummyValue,
@@ -41,14 +64,22 @@ function processFormData(data, matchingLogin) {
   );
   let modifiedFormData = JSON.parse(bodyModified);
 
-  return { bodyType: MODIFIED_FORMDATA, data: modifiedFormData };
+  return { bodyStatus: MODIFIED_FORMDATA, data: modifiedFormData };
 }
 
-function scanRequestBody(requestDetails) {
+/**
+ * Checks whether the request is sent to the same origin
+ * If so either call processFormData if the webRequest API parsed the request body correctly
+ * Or call processRawBytes if the API failed to parse the form data due to not supporting the encoding type
+ *
+ * @param {Object} requestDetails, relevant informatioin are requestDetails.requestBody and requestDetails.url
+ * @returns {Object} modified request body if the dummy value was found (in theory)
+ */
+function processOnBeforeRequest(requestDetails) {
   if (requestDetails.method == "POST" && requestDetails.requestBody) {
     let matchingLogin;
     credentialStorage.credentials.forEach((cred) => {
-      if (isValidHost(requestDetails.url, cred.origin)) {
+      if (isSameOrigin(requestDetails.url, cred.origin)) {
         matchingLogin = cred;
       }
     });
@@ -70,7 +101,7 @@ function scanRequestBody(requestDetails) {
         return;
       }
 
-      switch (res?.bodyType) {
+      switch (res?.bodyStatus) {
         case UNMODIFIED:
         //console.log("Body unmodified.");
         case MODIFIED_RAW:
@@ -81,12 +112,22 @@ function scanRequestBody(requestDetails) {
           requestDetails.requestBody.formData = res.data;
           console.log("Modified form data: ", res.data);
       }
+      if (!res?.bodyStatus !== UNMODIFIED) {
+        modifiedBodies.set(requestDetails.requestId, {
+          modiefiedRequestBody: requestDetails.requestBody,
+          credentialInfoOrigin: matchingLogin.origin,
+        });
+      }
     }
   }
 }
 
+/**
+ * Adds an event listener for the extension event onBeforeRequest
+ * with the callback function processOnBeforeRequest, a URL filter that let's through every event and a request to include the request body in the request details
+ */
 browser.webRequest.onBeforeRequest.addListener(
-  scanRequestBody,
+  processOnBeforeRequest,
   { urls: ["<all_urls>"] },
-  ["requestBody"]
+  ["requestBody"] //["blocking"] for making the request synchronously to modify the requestBody
 );
