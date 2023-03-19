@@ -39,10 +39,14 @@ about:debugging#/runtime/this-firefox
 
 5. Click "Load Temporary Add-on..."
 
-6. Select the manifest.json file in from the main directory of the repository.
+6. Select the manifest.json file in the main directory of the repository.
 
-7. Next to the newly added extension with the name _Secure Credential Provision_ click "Inspect" to check out the log messages from the extension in the Console Tab. (To see network traffic in the Network Tab use the regular Web Developer Toolbox)
+7. Next to the newly added extension with the name _Secure Credential Provision_ click "Inspect"
 
-8. Now you can execute the [credentials theft exploit](https://github.com/1rneh/capture-credentials-exploit). Check out the logs that indicate that the extension has received credential information or modified a HTTP request body.
+This Toolbox is to check out the log messages from the extension in the Console Tab that indicate that the extension has received credential information or modified a HTTP request body. They should look like [these example logs](https://github.com/1rneh/secure-credential-provision-extension/tree/main/test-results) (when you are testing the prototype).\
+To see the network traffic (e.g. the fetch request exfiltrating the user password) use the regular Web Developer Toolbox and check the Network Tab
 
-9. Optional: Repeat the [credentials theft exploit](https://github.com/1rneh/capture-credentials-exploit) but without the prototype changes. Set `extensions.experiments.enabled` to false for this.
+8. You can repeat the [credentials theft exploit](https://github.com/1rneh/capture-credentials-exploit) or try out the adapted autofill process on any other login page. \
+   See the test results for web applications where it should work: [Secure Credential Provision results](./Secure_Credential_Provision_Test_Results.pdf).
+
+Set `extensions.experiments.enabled` to false, to check out the regular autofill process or to repeat the [credentials theft exploit](https://github.com/1rneh/capture-credentials-exploit) without the prototype changes.
