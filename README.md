@@ -39,7 +39,7 @@ about:debugging#/runtime/this-firefox
 
 6. Select the manifest.json file in from the main directory of the repository.
 
-7. Next to the newly added extension with the name _Secure Credential Provision_ click "Inspect" to check out the log messages from the extension in the Console Tab.
+7. Next to the newly added extension with the name _Secure Credential Provision_ click "Inspect" to check out the log messages from the extension in the Console Tab. (To see network traffic in the Network Tab use the regular Web Developer Toolbox)
 
 8. Now you can execute the [credentials theft exploit](https://github.com/1rneh/capture-credentials-exploit). Check out the logs that indicate that the extension has received credential information or modified a HTTP request body.
 
