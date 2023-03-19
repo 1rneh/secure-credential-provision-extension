@@ -84,7 +84,10 @@ function processOnBeforeRequest(requestDetails) {
       }
     });
     if (matchingLogin) {
-      console.log("Scanning body...", requestDetails.requestBody);
+      console.log(
+        "Scanning body...",
+        structuredClone(requestDetails.requestBody)
+      );
 
       let res;
       if (requestDetails.requestBody?.raw) {
