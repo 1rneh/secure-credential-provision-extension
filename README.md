@@ -15,6 +15,8 @@ The experimental Firefox extension contributes to the secure provision of passwo
 **Detailed version**:
 The LoginManagerChild only receives and autofills a dummy password into the login web page. The _passwordmgr-on-receive-credential-info_ browser event containing {id, realValue, dummyValue, origin} is dispatched from the LoginManagerParent. The extension listens for the extension event _onCredentialInfo_ that is fired by the experimental credentials API when the API gets notified about the _passwordmgr-on-receive-credential-info_ browser event. The extension saves the credential details in a storage. It also listens for the _onBeforeRequest_ extension event by the webRequest API. That event provides the HTTP request bodies for the requests whose hosts match the origin associated with the saved credentials.
 
+Test results can be found [here](https://github.com/1rneh/secure-credential-provision-extension/tree/main/test-results).
+
 ---
 
 ## Installation steps
