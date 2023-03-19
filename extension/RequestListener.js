@@ -108,13 +108,16 @@ function processOnBeforeRequest(requestDetails) {
         case UNMODIFIED:
           break;
         case MODIFIED_RAW:
-          requestDetails.requestBody.raw[0].bytes = res.data;
+          requestDetails.requestBody.raw[0].bytes = { bytes: res.data };
           console.log("Modified raw byte data: ", ab2str(res.data));
           credentialStorage.removeCredentialInfo(matchingLogin.id);
           break;
         case MODIFIED_FORMDATA:
-          requestDetails.requestBody.formData = res.data;
-          console.log("Modified form data: ", res.data);
+          requestDetails.requestBody.formData = { formData: res.data };
+          console.log(
+            "Modified form data: ",
+            requestDetails.requestBody.formData
+          );
           break;
       }
     }
